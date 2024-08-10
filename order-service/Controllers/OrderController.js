@@ -13,9 +13,12 @@ const getOrders = async (req, res) => {
   }
 };
 
-const createOrder = async (req, res) => {
+const createOrder = async (products) => {
   try {
-    const { products, total_price } = req.body;
+    const total_price = products.reduce(
+      (acc, product) => acc + product.price,
+      0
+    );
 
     if (!products || !total_price)
       return res.status(500).json({ message: "Invalid Parameters" });
@@ -26,16 +29,14 @@ const createOrder = async (req, res) => {
     });
 
     await newOrder.save();
-
-    return res.status(201).json({ newOrder, message: "Order Added" });
+    console.log("Order added to DB", newOrder);
   } catch (error) {
     console.log(`Error while creating orders : ${error}`);
     return res.status(500).json({ message: "Error while creating orders" });
   }
 };
 
-
 module.exports = {
-    getOrders,
-    createOrder
-}
+  getOrders,
+  createOrder,
+};
