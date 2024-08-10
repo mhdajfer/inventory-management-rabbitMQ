@@ -1,3 +1,5 @@
+const ProductModel = require("../models/Product");
+
 const getProducts = async (req, res) => {
   try {
     const products = await ProductModel.find();
@@ -6,8 +8,8 @@ const getProducts = async (req, res) => {
 
     return res.status(200).json({ products, message: "Products available" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
     console.log(`server error while retrieving products: ${error.message}`);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -30,13 +32,12 @@ const createProduct = async (req, res) => {
       .status(201)
       .json({ newProduct, message: "Product saved successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
     console.log(`server error while creating product: ${error.message}`);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
-
 module.exports = {
-    getProducts,
-    createProduct
-}
+  getProducts,
+  createProduct,
+};
