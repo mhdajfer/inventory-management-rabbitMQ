@@ -1,4 +1,5 @@
 const ProductModel = require("../models/Product");
+const publishMessage = require("../config/RabbitMQ");
 
 const getProducts = async (req, res) => {
   try {
@@ -37,7 +38,25 @@ const createProduct = async (req, res) => {
   }
 };
 
+const buyProduct = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    const products = await ProductModel.find({ _id: { $in: ids } });
+
+    console.log("ordered products: ", products);
+
+    await publishMessage(JSON.stringify(products), "order_products");
+
+    return res.status(201).json({ message: "order created successfully" });
+  } catch (error) {
+    console.log(`server error while buying product: ${error.message}`);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getProducts,
   createProduct,
+  buyProduct,
 };
